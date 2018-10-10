@@ -28,6 +28,9 @@ Example `codefresh.yml` build is below with required ENVIRONMENT VARIABLES in pl
 | REGISTRY_USERNAME | null | string | Yes | Docker Registry Username |
 | TAG | null | string | Yes | Docker Image Tag |
 
+Right now this is limited to Codefresh Docker Registry.
+Username is your Codefresh Username and Docker Registry keys can be created here https://g.codefresh.io/user/settings
+
 ### codefresh.yml
 
 Codefresh Build Step to execute Twistlock scan.
