@@ -1,0 +1,21 @@
+version: '1.0'
+steps:
+  BuildingDockerImage:
+    title: Building Docker Image
+    type: build
+    image_name: codefresh/cfstep-paclair
+    working_directory: ./
+    tag: '${{PACLAIR_VERSION}}'
+    dockerfile: Dockerfile
+    build_arguments:
+      - PACLAIR_VERSION=PACLAIR_VERSION
+  PushingToDockerRegistry:
+    title: Pushing to Docker Registry
+    type: push
+    candidate: '${{BuildingDockerImage}}'
+    tag: '${{PACLAIR_VERSION}}'
+    registry: dockerhub
+    when:
+      branch:
+        only:
+          - master
