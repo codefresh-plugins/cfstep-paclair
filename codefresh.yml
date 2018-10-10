@@ -8,7 +8,7 @@ steps:
     tag: '${{PACLAIR_VERSION}}'
     dockerfile: Dockerfile
     build_arguments:
-      - PACLAIR_VERSION=PACLAIR_VERSION
+      - PACLAIR_VERSION=${{PACLAIR_VERSION}}
   PushingToDockerRegistry:
     title: Pushing to Docker Registry
     type: push
