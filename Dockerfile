@@ -9,7 +9,7 @@ RUN apk update && \
     apk add --no-cache \
         git \
         nodejs && \
-    pip install --no-cache-dir paclair == $PACLAIR_VERSION && \
+    pip install --no-cache-dir paclair==$PACLAIR_VERSION && \
     npm install codefresh -g
 
 COPY script/paclair.py /paclair.py
