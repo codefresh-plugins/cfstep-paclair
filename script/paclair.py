@@ -92,9 +92,12 @@ def main(command):
                 if cf_account:
                     output = run_command(' '.join([base_command, command]))
                     l = output.strip().split('\n')
-                    json_data = {i.strip().split(':')[0]: int(i.strip().split(':')[1]) for i in l}
-                    annotations = create_annotation_list(json_data)
-                    annotate_image(docker_image_id, annotations)
+                    try:
+                        json_data = {i.strip().split(':')[0]: int(i.strip().split(':')[1]) for i in l}
+                        annotations = create_annotation_list(json_data)
+                        annotate_image(docker_image_id, annotations)
+                    except:
+                        pass
                 else:
                     output = run_command(' '.join([base_command, command]))
                     print(output)
