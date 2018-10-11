@@ -53,8 +53,6 @@ steps:
       - CF_ACCOUNT=dustinvanbuskirk
       - IMAGE=example-voting-app/worker # Replace with your Docker image name
       - TAG=${{CF_BRANCH_TAG_NORMALIZED}}
-    commands: 
-      - python /paclair.py scan
     on_success: # Execute only once the step succeeded
       metadata: # Declare the metadata attribute
         set: # Specify the set operation
