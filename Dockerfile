@@ -14,5 +14,5 @@ RUN apk update && \
 
 COPY script/paclair.py /paclair.py
 
-ENTRYPOINT ['python', '/paclair.py']
-CMD ['scan']
+ENTRYPOINT ["python", "/paclair.py"]
+CMD ["scan"]
