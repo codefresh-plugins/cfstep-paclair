@@ -26,7 +26,16 @@ Example `codefresh.yml` build is below with required ENVIRONMENT VARIABLES in pl
 | IMAGE | null | string | Yes | Docker Image Name |
 | REGISTRY_PASSWORD | null | string | Yes | Docker Registry Password |
 | REGISTRY_USERNAME | null | string | Yes | Docker Registry Username |
+| SEVERITY_THRESHOLD | null | string | No | critical, high, medium, low, negligible, unknown |
 | TAG | null | string | Yes | Docker Image Tag |
+
+### SEVERITY_THRESHOLD
+
+If variable is set step will check that the threshold is not met or exceeded.  
+
+For example, high would fail your build if you had high or critical vulnerabilties on your Docker image.
+
+### Notes
 
 Right now this is limited to Codefresh Docker Registry.
 Username is your Codefresh Username and Docker Registry keys can be created here https://g.codefresh.io/user/settings
