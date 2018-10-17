@@ -6,6 +6,7 @@ import requests
 import sys
 import subprocess
 import time
+import warnings
 
 def run_command(full_command):
     proc = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -15,6 +16,7 @@ def run_command(full_command):
         sys.exit(1)
     return b''.join(output).strip().decode()  # only save stdout into output, ignore stderr
 
+
 def create_annotation_list(json_data):
     annotations = []
     annotation_list = ''
@@ -22,6 +24,32 @@ def create_annotation_list(json_data):
         annotations.append("-l CLAIR_VULNS_{}={}".format(key.upper(), value))
         annotation_list = ' '.join(annotations)
     return annotation_list
+
+
+def get_severity_weight(severity_level):
+
+    dict = {
+        "CRITICAL":6,
+        "HIGH":5 ,
+        "MEDIUM":4,
+        "LOW":3,
+        "NEGLIGIBLE":2,
+        "UNKNOWN":1
+    }
+
+    weight = dict.get(severity_level, 0)
+
+    return weight
+
+
+def get_max_severity_weight(json_data):
+
+    severity_weight_list = []
+
+    for key, value in json_data.items():
+        severity_weight_list.append(get_severity_weight(str(key).upper()))
+
+    return max(severity_weight_list)
 
 
 def annotate_image(docker_image_id, annotation_list):
@@ -44,6 +72,7 @@ def main(command):
     registry = os.getenv('REGISTRY', 'r.cfcr.io') 
     registry_username = os.getenv('REGISTRY_USERNAME')
     registry_password = os.getenv('REGISTRY_PASSWORD')
+    severity_threshold = os.getenv('SEVERITY_THRESHOLD')
 
     # Build paclair config
 
@@ -91,13 +120,19 @@ def main(command):
             if 'stats' in command:
                 if cf_account:
                     output = run_command(' '.join([base_command, command]))
-                    l = output.strip().split('\n')
-                    try:
+                    if output:
+                        l = output.strip().split('\n')
                         json_data = {i.strip().split(':')[0]: int(i.strip().split(':')[1]) for i in l}
                         annotations = create_annotation_list(json_data)
                         annotate_image(docker_image_id, annotations)
-                    except:
-                        pass
+                        if severity_threshold:
+                            print('Running Severity Analysis...')
+                            if get_max_severity_weight(json_data) >= get_severity_weight(severity_threshold.upper()):
+                                raise ValueError('Severity Check Failed!')
+                            else:
+                                print('Severity Check Passed!')
+                    else:
+                        warnings.warn('No Vulnerabilities Returned from Clair Scan.')
                 else:
                     output = run_command(' '.join([base_command, command]))
                     print(output)
