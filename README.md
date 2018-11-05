@@ -13,6 +13,26 @@ Helm Chart is available to install here: https://github.com/coreos/clair/tree/ma
 
 paclair: https://github.com/yebinama/paclair
 
+### Tested Registries
+
+Codefresh Registry - No special setup required.
+
+Username is your Codefresh Username and Docker Registry keys can be created here https://g.codefresh.io/user/settings
+
+ECR - Requires AWS CLI credentials with access to ECR.
+`REGISTRY=ecr` will find the proper ECR registry using your credentials and image.
+
+AWS CLI Credentials required for ECR:
+https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
+
+| ENVIRONMENT VARIABLE |
+| --------------------- |
+| AWS_ACCESS_KEY_ID |
+| AWS_DEFAULT_REGION |
+| AWS_SECRET_ACCESS_KEY |
+
+Registries with Basic auth and Token based auth should work.
+
 ### Full List of Options
 
 To use an ENVIRONMENT VARIABLE you need to add the variables to your Codefresh Pipeline and also to your codefresh.yml.
@@ -21,12 +41,18 @@ Example `codefresh.yml` build is below with required ENVIRONMENT VARIABLES in pl
 
 | ENVIRONMENT VARIABLE | DEFAULT | TYPE | REQUIRED | DESCRIPTION |
 |----------------------------|----------|---------|----------|---------------------------------------------------------------------------------------------------------------------------------|
+| API_PREFIX | null | string | No | Prefix for API to Docker Registry |
 | CF_ACCOUNT | null | string | No | Codefresh Account Name |
 | CLAIR_URL | null | string | Yes | https://clair.domain.com:6060 |
 | IMAGE | null | string | Yes | Docker Image Name |
+| PROTOCOL | https | string | No | Docker Registry Protocol |
+| REGISTRY | r.cfcr.io | string | No | For ECR use `ecr` else use domain name for Docker Registry |
 | REGISTRY_PASSWORD | null | string | Yes | Docker Registry Password |
 | REGISTRY_USERNAME | null | string | Yes | Docker Registry Username |
 | SEVERITY_THRESHOLD | null | string | No | critical, high, medium, low, negligible, unknown |
+| TOKEN | null | string | No | Docker Registry Auth Token |
+| TOKEN_TYPE | Bearer | string | No | Docker Registry Auth Token Type |
+| TOKEN_URL | null | string | No | Docker Registry Auth Token URL |
 | TAG | null | string | Yes | Docker Image Tag |
 
 ### SEVERITY_THRESHOLD
@@ -35,14 +61,9 @@ If variable is set step will check that the threshold is not met or exceeded.
 
 For example, high would fail your build if you had high or critical vulnerabilties on your Docker image.
 
-### Notes
-
-Right now this is limited to Codefresh Docker Registry.
-Username is your Codefresh Username and Docker Registry keys can be created here https://g.codefresh.io/user/settings
-
 ### codefresh.yml
 
-Codefresh Build Step to execute Twistlock scan.
+Codefresh Build Step to execute Clair scan.
 All `${{var}}` variables must be put into Codefresh Build Parameters
 codefresh.yml
 
@@ -83,7 +104,10 @@ steps:
               - CLAIR_REPORT: "https://s3.amazonaws.com/${{S3_BUCKETNAME}}/${{CF_BUILD_ID}}/clair-scan-example-voting-app-worker-${{CF_BRANCH_TAG_NORMALIZED}}.html"
 ```
 
-Optional Storage Step Variables:
+The HTML report is stored in `./reports/clair-scan-{image name}-{image tag}.html`
+Any `/` characters in `{image name}` are replaced with `-`
+
+Optional Storage Step Variables for AWS S3:
 
 | ENVIRONMENT VARIABLE | DEFAULT | TYPE | REQUIRED | DESCRIPTION |
 |----------------------------|----------|---------|----------|---------------------------------------------------------------------------------------------------------------------------------|
@@ -92,3 +116,6 @@ Optional Storage Step Variables:
 | AWS_SECRET_ACCESS_KEY | null | string | Yes | AWS Secret Key of S3 Bucket |
 | S3_BUCKETNAME | null | string | Yes | Name of S3 Bucket to Store Reports |
 
+### Notes
+
+Not yet supporting manual Cert validation.  Coming soon along with tests.
