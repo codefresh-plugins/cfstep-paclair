@@ -7,6 +7,27 @@ import sys
 import subprocess
 import time
 import warnings
+import boto3
+import base64
+
+def get_ecr_credentials(image):
+    client = boto3.client('ecr')
+    response = client.describe_repositories()
+    registry_list = [item for item in response['repositories'] if item.get('repositoryName')==image]
+
+    auth_token = client.get_authorization_token(
+                                                registryIds=[
+                                                    registry_list[0]['registryId'],
+                                                    ]
+                                                )
+
+    token_url = auth_token['authorizationData'][0]['proxyEndpoint']
+    registry = token_url.replace('https://','')
+    token = auth_token['authorizationData'][0]['authorizationToken']
+    token_type = 'Basic'
+
+    return(registry, token, token_type ,token_url)
+
 
 def run_command(full_command):
     proc = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -64,32 +85,43 @@ def annotate_image(docker_image_id, annotation_list):
 
 
 def main(command):
+    api_prefix = os.getenv('API_PREFIX', '')
     cf_account = os.getenv('CF_ACCOUNT')
     clair_url = os.getenv('CLAIR_URL', 'http://clair:6060')
-    clair_verify = os.getenv('CLAIR_VERIFY', 'false')
     image = os.getenv('IMAGE')
-    tag = os.getenv('TAG')
+    protocol = os.getenv('PROTOCOL', 'https')
     registry = os.getenv('REGISTRY', 'r.cfcr.io') 
     registry_username = os.getenv('REGISTRY_USERNAME')
     registry_password = os.getenv('REGISTRY_PASSWORD')
     severity_threshold = os.getenv('SEVERITY_THRESHOLD')
+    tag = os.getenv('TAG')
+    token = os.getenv('TOKEN')
+    token_type = os.getenv('TOKEN_TYPE', 'Bearer')
+    token_url = os.getenv('TOKEN_URL')
 
     # Build paclair config
 
+    if registry == 'ecr':
+        registry, token, token_type, token_url = get_ecr_credentials(image)
+
     data = {
                 'General': {
-                    'clair_url':clair_url, 
-                    'verify':clair_verify
+                    'clair_url':clair_url,
                 },
                 'Plugins': {
                     'Docker': {
                         'class': 'paclair.plugins.docker_plugin.DockerPlugin',
                         'registries': { 
                             registry: {
+                                'api_prefix': api_prefix,
                                 'auth': [
                                     registry_username,
                                     registry_password
-                                ]
+                                ],
+                                'protocol':protocol,
+                                'token':token,
+                                'token_type':token_type,
+                                'token_url':token_url,
                             }
                         }
                     }
@@ -106,11 +138,10 @@ def main(command):
     
     docker_image_id = '{}:{}'.format(image, tag)
 
-    base_command = ("paclair Docker {}/{}:{}"
+    base_command = ("paclair Docker {}/{}"
                         .format(
                                 full_registry,
-                                image,
-                                tag
+                                docker_image_id
                                 )
                         )
     
