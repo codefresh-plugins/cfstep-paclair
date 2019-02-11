@@ -86,7 +86,6 @@ def annotate_image(docker_image_id, annotation_list):
 
 def main(command):
     api_prefix = os.getenv('API_PREFIX', '')
-    cf_account = os.getenv('CF_ACCOUNT')
     clair_url = os.getenv('CLAIR_URL', 'http://clair:6060')
     image = os.getenv('IMAGE')
     protocol = os.getenv('PROTOCOL', 'https')
@@ -103,6 +102,8 @@ def main(command):
 
     if registry == 'ecr':
         registry, token, token_type, token_url = get_ecr_credentials(image)
+    else:
+        cf_account = os.getenv('CF_ACCOUNT')
 
     data = {
                 'General': {

@@ -42,7 +42,7 @@ Example `codefresh.yml` build is below with required ENVIRONMENT VARIABLES in pl
 | ENVIRONMENT VARIABLE | DEFAULT | TYPE | REQUIRED | DESCRIPTION |
 |----------------------------|----------|---------|----------|---------------------------------------------------------------------------------------------------------------------------------|
 | API_PREFIX | null | string | No | Prefix for API to Docker Registry |
-| CF_ACCOUNT | null | string | No | Codefresh Account Name |
+| CF_ACCOUNT | Codefresh Account Name | string | No | Codefresh Account Name (Skipped for ECR) |
 | CLAIR_URL | null | string | Yes | https://clair.domain.com:6060 |
 | IMAGE | null | string | Yes | Docker Image Name |
 | PROTOCOL | https | string | No | Docker Registry Protocol |
@@ -80,7 +80,6 @@ steps:
   CheckClair:
     image: codefresh/cfstep-paclair:3.1.0
     environment:
-      - CF_ACCOUNT=dustinvanbuskirk
       - IMAGE=example-voting-app/worker # Replace with your Docker image name
       - TAG=${{CF_BRANCH_TAG_NORMALIZED}}
     on_success: # Execute only once the step succeeded
