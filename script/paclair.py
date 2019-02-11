@@ -102,6 +102,7 @@ def main(command):
 
     if registry == 'ecr':
         registry, token, token_type, token_url = get_ecr_credentials(image)
+        cf_account = None
     else:
         cf_account = os.getenv('CF_ACCOUNT')
 
