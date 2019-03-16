@@ -1,6 +1,5 @@
-title: paclair
 image: codefreshplugins/cfstep-paclair
-category:
+categories:
   - Security
 version: 0.1.0
 description: "Scan docker images with Clair - https://github.com/coreos/clair"
@@ -8,11 +7,11 @@ keywords:
   - docker
   - clair
   - security
-source: https://github.com/codefresh-contrib/cfstep-paclair
+sources: https://github.com/codefresh-contrib/cfstep-paclair
 maintainers:
   - name: Dustin Van Buskirk
     email: dustinb@codefresh.io
-logo: https://cloud.githubusercontent.com/assets/343539/21630811/c5081e5c-d202-11e6-92eb-919d5999c77a.png
+icon: https://cloud.githubusercontent.com/assets/343539/21630811/c5081e5c-d202-11e6-92eb-919d5999c77a.png
 envs:
   - name: API_PREFIX
     description: "Prefix for API to Docker Registry"
