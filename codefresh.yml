@@ -3,7 +3,7 @@ steps:
   BuildingDockerImage:
     title: Building Docker Image
     type: build
-    image_name: codefresh/cfstep-paclair
+    image_name: codefreshplugins/cfstep-paclair
     working_directory: ./
     tag: '${{PACLAIR_VERSION}}'
     dockerfile: Dockerfile
