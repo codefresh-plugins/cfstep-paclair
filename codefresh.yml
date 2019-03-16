@@ -5,15 +5,15 @@ steps:
     type: build
     image_name: codefreshplugins/cfstep-paclair
     working_directory: ./
-    tag: '${{PACLAIR_VERSION}}'
+    tag: '3.1.0'
     dockerfile: Dockerfile
     build_arguments:
-      - PACLAIR_VERSION=${{PACLAIR_VERSION}}
+      - PACLAIR_VERSION=3.1.0
   PushingToDockerRegistry:
     title: Pushing to Docker Registry
     type: push
     candidate: '${{BuildingDockerImage}}'
-    tag: '${{PACLAIR_VERSION}}'
+    tag: '3.1.0'
     registry: dockerhub
     when:
       branch:
