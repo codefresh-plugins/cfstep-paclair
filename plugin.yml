@@ -12,7 +12,7 @@ sources:
 maintainers:
   - name: Dustin Van Buskirk
     email: dustinb@codefresh.io
-icon: https://cloud.githubusercontent.com/assets/343539/21630811/c5081e5c-d202-11e6-92eb-919d5999c77a.png
+icon: https://github.com/codefresh-plugins/cfstep-paclair/blob/master/icon.jpg
 envs:
   - name: API_PREFIX
     description: "Prefix for API to Docker Registry"
