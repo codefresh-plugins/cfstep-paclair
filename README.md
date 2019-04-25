@@ -78,7 +78,7 @@ steps:
     dockerfile: Dockerfile
     tag: '${{CF_BRANCH_TAG_NORMALIZED}}'
   CheckClair:
-    image: codefresh/cfstep-paclair:3.1.0
+    image: codefreshplugins/cfstep-paclair:3.1.0
     environment:
       - IMAGE=example-voting-app/worker # Replace with your Docker image name
       - TAG=${{CF_BRANCH_TAG_NORMALIZED}}

@@ -1,6 +1,7 @@
 image: codefreshplugins/cfstep-paclair
 categories:
   - security
+tag: 3.1.0
 version: 0.1.0
 description: "Scan docker images with Clair - https://github.com/coreos/clair"
 keywords:
